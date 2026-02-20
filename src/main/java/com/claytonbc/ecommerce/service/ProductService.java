@@ -1,6 +1,7 @@
 package com.claytonbc.ecommerce.service;
 
 import com.claytonbc.ecommerce.dto.ProductRequestDTO;
+import com.claytonbc.ecommerce.dto.ProductResponseDTO;
 import com.claytonbc.ecommerce.entity.Category;
 import com.claytonbc.ecommerce.entity.Product;
 import com.claytonbc.ecommerce.exception.BusinessException;
@@ -18,7 +19,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
-    public Product create(ProductRequestDTO dto){
+    public ProductResponseDTO create(ProductRequestDTO dto){
 
         Category category = categoryRepository.findById(dto.categoryId())
                 .orElseThrow(() -> new BusinessException("Category not found"));
@@ -30,10 +31,25 @@ public class ProductService {
         product.setStock(dto.stock());
         product.setCategory(category);
 
-        return productRepository.save(product);
+        Product savedProduct = productRepository.save(product);
+        return toResponseDTO(savedProduct);
     }
 
-    public List<Product> findAll(){
-        return productRepository.findAll();
+    public List<ProductResponseDTO> findAll(){
+        return productRepository.findAll()
+                .stream()
+                .map(this::toResponseDTO)
+                .toList();
+    }
+    private ProductResponseDTO toResponseDTO(Product product) {
+        return new ProductResponseDTO(
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getPrice(),
+                product.getStock(),
+                product.getCategory().getId(),
+                product.getCategory().getName()
+        );
     }
 }

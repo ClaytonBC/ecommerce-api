@@ -1,6 +1,7 @@
 package com.claytonbc.ecommerce.controller;
 
 import com.claytonbc.ecommerce.dto.ProductRequestDTO;
+import com.claytonbc.ecommerce.dto.ProductResponseDTO;
 import com.claytonbc.ecommerce.entity.Product;
 import com.claytonbc.ecommerce.service.ProductService;
 import jakarta.validation.Valid;
@@ -17,11 +18,11 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public Product create(@RequestBody @Valid ProductRequestDTO dto) {
+    public ProductResponseDTO create(@RequestBody @Valid ProductRequestDTO dto) {
         return productService.create(dto);
     }
     @GetMapping
-    public List<Product> findAll() {
+    public List<ProductResponseDTO> findAll() {
         return productService.findAll();
     }
 }
