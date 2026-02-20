@@ -36,4 +36,8 @@ public class ProductController {
     ) {
         return productService.update(id, dto);
     }
+    @GetMapping("/category/{categoryId}")
+    public List<ProductResponseDTO> findByCategory(@PathVariable Long categoryId) {
+        return productService.findByCategory(categoryId);
+    }
 }

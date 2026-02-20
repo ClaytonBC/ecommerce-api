@@ -83,5 +83,10 @@ public class ProductService {
 
         productRepository.delete(product);
     }
-
+    public List<ProductResponseDTO> findByCategory(Long categoryId) {
+        return productRepository.findByCategoryId(categoryId)
+                .stream()
+                .map(this::toResponseDTO)
+                .toList();
+    }
 }
