@@ -25,4 +25,15 @@ public class ProductController {
     public List<ProductResponseDTO> findAll() {
         return productService.findAll();
     }
+    @GetMapping("/{id}")
+    public ProductResponseDTO findById(@PathVariable Long id) {
+        return productService.findById(id);
+    }
+    @PutMapping("/{id}")
+    public ProductResponseDTO update(
+            @PathVariable Long id,
+            @RequestBody @Valid ProductRequestDTO dto
+    ) {
+        return productService.update(id, dto);
+    }
 }

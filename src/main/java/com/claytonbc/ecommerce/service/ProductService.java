@@ -52,4 +52,36 @@ public class ProductService {
                 product.getCategory().getName()
         );
     }
+    public ProductResponseDTO findById(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Product not found"));
+
+        return toResponseDTO(product);
+    }
+    public ProductResponseDTO update(Long id, ProductRequestDTO dto) {
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Product not found"));
+
+        Category category = categoryRepository.findById(dto.categoryId())
+                .orElseThrow(() -> new BusinessException("Category not found"));
+
+        product.setName(dto.name());
+        product.setDescription(dto.description());
+        product.setPrice(dto.price());
+        product.setStock(dto.stock());
+        product.setCategory(category);
+
+        Product updated = productRepository.save(product);
+
+        return toResponseDTO(updated);
+    }
+    public void delete(Long id) {
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Product not found"));
+
+        productRepository.delete(product);
+    }
+
 }
