@@ -13,6 +13,8 @@ import com.claytonbc.ecommerce.repository.CustomerRepository;
 import com.claytonbc.ecommerce.repository.OrderRepository;
 import com.claytonbc.ecommerce.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -32,6 +34,7 @@ public class OrderService {
 
         Customer customer = customerRepository.findById(dto.customerId())
                 .orElseThrow(() -> new BusinessException("Customer not found"));
+
         Order order = new Order();
         order.setCustomer(customer);
         order.setCreatedAt(LocalDateTime.now());
@@ -63,19 +66,23 @@ public class OrderService {
 
         Order saved = orderRepository.save(order);
 
+        return toResponseDTO(saved);
+    }
+    public Page<OrderResponseDTO> findAll(Pageable pageable) {
+        return orderRepository.findAll(pageable)
+                .map(this::toResponseDTO);
+    }
+    private OrderResponseDTO toResponseDTO(Order order) {
         return new OrderResponseDTO(
-                saved.getId(),
-                saved.getCustomer().getId(),
-                saved.getTotalAmount(),
-                saved.getCreatedAt(),
-                saved.getItems().stream()
+                order.getId(),
+                order.getCustomer().getId(),
+                order.getTotalAmount(),
+                order.getCreatedAt(),
+                order.getItems().stream()
                         .map(item -> new OrderItemResponseDTO(
                                 item.getProduct().getId(),
                                 item.getProduct().getName(),
                                 item.getQuantity(),
-                                item.getPrice()
-                        ))
-                        .toList()
-        );
+                                item.getPrice())).toList());
     }
 }

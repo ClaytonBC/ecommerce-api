@@ -5,10 +5,11 @@ import com.claytonbc.ecommerce.dto.OrderResponseDTO;
 import com.claytonbc.ecommerce.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/orders")
@@ -20,5 +21,17 @@ public class OrderController {
     @PostMapping
     public OrderResponseDTO create(@RequestBody @Valid OrderRequestDTO dto) {
         return orderService.create(dto);
+    }
+
+    @GetMapping
+    public Page<OrderResponseDTO> findAll(
+            @PageableDefault(
+                    size = 10,
+                    sort = "createdAt",
+                    direction = Sort.Direction.DESC
+            )
+            Pageable pageable
+    ) {
+        return orderService.findAll(pageable);
     }
 }
