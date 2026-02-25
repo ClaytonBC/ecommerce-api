@@ -96,4 +96,27 @@ public class OrderServiceTest {
         verify(orderRepository, never()).save(any(Order.class));
     }
 
+    @Test
+    void shouldThrowExceptionWhenProductNotFound() {
+
+        OrderItemRequestDTO itemDTO =
+                new OrderItemRequestDTO(1L, 2);
+
+        OrderRequestDTO request =
+                new OrderRequestDTO(1L, List.of(itemDTO));
+
+        when(customerRepository.findById(1L))
+                .thenReturn(Optional.of(customer));
+
+        when(productRepository.findById(1L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(BusinessException.class, () -> {
+            orderService.create(request);
+        });
+
+        verify(orderRepository, never())
+                .save(any(Order.class));
+
+    }
 }
