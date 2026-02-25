@@ -119,4 +119,48 @@ public class OrderServiceTest {
                 .save(any(Order.class));
 
     }
+    @Test
+    void shouldCalculateTotalForMultipleItems() {
+
+        // Arrange
+        Product product1 = new Product();
+        product1.setId(1L);
+        product1.setName("Product A");
+        product1.setPrice(new BigDecimal("100"));
+
+        Product product2 = new Product();
+        product2.setId(2L);
+        product2.setName("Product B");
+        product2.setPrice(new BigDecimal("50"));
+
+        OrderItemRequestDTO item1 =
+                new OrderItemRequestDTO(1L, 2); // 200
+
+        OrderItemRequestDTO item2 =
+                new OrderItemRequestDTO(2L, 3); // 150
+
+        OrderRequestDTO request =
+                new OrderRequestDTO(1L, List.of(item1, item2));
+
+        when(customerRepository.findById(1L))
+                .thenReturn(Optional.of(customer));
+
+        when(productRepository.findById(1L))
+                .thenReturn(Optional.of(product1));
+
+        when(productRepository.findById(2L))
+                .thenReturn(Optional.of(product2));
+
+        when(orderRepository.save(any(Order.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        OrderResponseDTO response = orderService.create(request);
+
+        // Assert
+        assertEquals(new BigDecimal("350"), response.totalAmount());
+        assertEquals(2, response.items().size());
+
+        verify(orderRepository, times(1)).save(any(Order.class));
+    }
 }
